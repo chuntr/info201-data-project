@@ -15,12 +15,12 @@ library(stringr)
 library(janitor)
 library(lubridate)
 
-dev.off()
+
 us_i <- clean_names(read_delim("infections/data/us_confirmed.csv"))
 us_d <- clean_names(read_delim("infections/data/us_deaths.csv"))
 
 #vax <- read_delim("vax/us_state_vaccinations.csv")
-ld <-clean_names(read_delim("lockdown/countryLockdowndates.csv"))
+lockdown <-clean_names(read_delim("lockdown/countryLockdowndates.csv"))
 
 ```
 
@@ -31,24 +31,26 @@ compare monthly case totals in 2022 for select states
 ```{r}
 
 
+# A random list of US states
+states <- c("Washington",
+            "California",
+            "Colorado",
+            "Arizona",
+            "Ohio",
+            "Alabama",
+            "Missouri",
+            "Montana",
+            "New York",
+            "Texas",
+            "Florida",
+            "Kentucky" )
+
 get_new_cases_by_month <- function(year) {
   # month scale is absolute from Jan 2020. This gives each month a unique id so
   # we can aggregate year over year data
   add_months <- 12 * (as.numeric(year) - 2020)
 
-  # A random list of US states
-  states <- c("Washington",
-              "California",
-              "Colorado",
-              "Arizona",
-              "Ohio",
-              "Alabama",
-              "Missouri",
-              "South Dakota",
-              "New York",
-              "Texas",
-              "Florida",
-              "Kentucky" )
+
 
   # grab this year's data for the selected states
   this_year <- us_i %>%
@@ -66,7 +68,7 @@ get_new_cases_by_month <- function(year) {
       group_by(admin2) %>%
       mutate(new_cases=case - lag(case)) %>%
       drop_na(new_cases) %>%
-      group_by(month = month(date) + add_months) %>%
+      group_by(month=month(date) + add_months) %>%
       summarize(new_monthly_cases=sum(new_cases))
 
     yearly_data = rbind(yearly_data, this_state_by_month %>% mutate(state=state))
@@ -78,11 +80,10 @@ get_new_cases_by_month <- function(year) {
 # graph data for a specific year
 plot_new_cases_by_month <- function(graph_data, title) {
   print(graph_data %>%
-    ggplot(aes(x=month,y=new_monthly_cases/1000, color=factor(state))) +
+    ggplot(aes(x=month, y=new_monthly_cases/1000, color=factor(state))) +
     geom_line() +
     geom_point() +
-    labs(x="month", y="Cases per month (x 1000)", color="US State") +
-    ggtitle(title)
+    labs(title=title, x="month", y="Cases per month (x 1000)", color="US State")
   )
 }
 
@@ -95,6 +96,9 @@ us_new_cases_2022 <- get_new_cases_by_month('2022')
 plot_new_cases_by_month(us_new_cases_2020, "New Cases: 2020")
 plot_new_cases_by_month(us_new_cases_2021, "New Cases: 2021")
 plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022 (Jan - April)")
+
+us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
+plot_new_cases_by_month(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
 ```
 
 #### 2. How do different countries compare in terms of COVID-19 cases and deaths?
@@ -103,8 +107,19 @@ plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022 (Jan - April)")
 #### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
 ```{r}
 ld_us <- lockdown %>% 
+  filter(country_region == "US") %>% 
+  filter(province %in% states) %>% 
+  group_by(month=as.numeric(month(date)))
+
 us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
-plot_new_cases_by_month(new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
+
+us_new_cases_2020 %>% 
+    ggplot(aes(x=month,y=new_monthly_cases/1000, color=factor(state))) +
+    geom_line() +
+    geom_point() +
+    labs(x="month", y="Cases per month (x 1000)", color="US State") +
+    ggtitle("New cases by month: 01/2020 - 04/2022") +
+    geom_vline(data=ld_us, aes(xintercept=month))
 ```
 
 #### 4. How has the pandemic affected different age groups and genders?
