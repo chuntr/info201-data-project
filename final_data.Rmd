@@ -31,7 +31,14 @@ compare monthly case totals in 2022 for select states
 
 
 get_new_cases_by_month <- function(year) {
+  # month scale is absolute from Jan 2020. This gives each month a unique id so
+  # we can aggregate year over year data
+  add_months <- 12 * (as.numeric(year) - 2020)
+
+  # we'll add to this empty df for each month
   yearly_data <- data.frame()
+
+  # A random list of US states
   states <- c("Washington",
               "California",
               "Colorado",
@@ -45,17 +52,20 @@ get_new_cases_by_month <- function(year) {
               "Florida",
               "Kentucky" )
 
+  # grab this year's data for the selected states
   this_year <- us_i %>%
     filter(province_state %in% states) %>%
     filter(str_detect(date, year))
 
+  # calculate aggregate new cases per month for each state, and add to the
+  # yearly data
   for(state in states) {
     this_state_by_month <- this_year %>%
       filter(province_state == state) %>%
       group_by(admin2) %>%
       mutate(new_cases=case - lag(case)) %>%
       drop_na(new_cases) %>%
-      group_by(month = month(date)) %>%
+      group_by(month = month(date) + add_months) %>%
       summarize(new_monthly_cases=sum(new_cases))
 
     yearly_data = rbind(yearly_data, this_state_by_month %>% mutate(state=state))
@@ -67,6 +77,7 @@ get_new_cases_by_month <- function(year) {
   return(yearly_data)
 }
 
+# graph data for a specific year
 plot_new_cases_by_month <- function(year) {
   graph_data <- get_new_cases_by_month(year)
   print(graph_data %>%
