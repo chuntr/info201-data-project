@@ -28,20 +28,46 @@ us_d <- clean_names(us_d)
 #### 1. What are the trends in daily new cases and deaths globally and in specific regions?
 compare monthly case totals in 2022 for select states
 ```{r}
-states <- c("Washington", "California", "Colorado", "Arizona", "Ohio", "Alabama", "Missouri", "South Dakota", "New York", "Texas", "Florida", "Kentucky" )
-
-us_i_2022 <- us_i %>%
-  filter(province_state %in% states) %>% 
-  filter(str_detect(date, '2022'))
-
-us_d_2022 <- us_d %>%
-  filter(province_state %in% states) %>% 
-  filter(str_detect(date, '2022'))
 
 
-us_i_2022 %>% 
-  group_by(month = month(date)) %>% 
-  summarize(monthly_cases = sum(case))
+print_graph_by_month <- function(year) {
+  graph_data <- data.frame()
+  states <- c("Washington",
+              "California",
+              "Colorado",
+              "Arizona",
+              "Ohio",
+              "Alabama",
+              "Missouri",
+              "South Dakota",
+              "New York",
+              "Texas",
+              "Florida",
+              "Kentucky" )
+  
+  this_year <- us_i %>%
+    filter(province_state %in% states) %>% 
+    filter(str_detect(date, year))
+  
+  for(state in states) {
+    this_state_by_month <- this_year %>% 
+      filter(province_state==state) %>% 
+      group_by(month=month(date)) %>% 
+      summarize(monthly_cases=sum(case))
+    
+    graph_data = rbind(graph_data, this_state_by_month %>% mutate(state=state))
+  }
+  
+  print(graph_data %>% 
+    ggplot(aes(x=month,y=monthly_cases, color=factor(state))) +
+    geom_line() +
+    geom_point() +
+    labs(x="month", y="Cases per month", ""))
+}
+
+print_graph('2020')
+print_graph('2021')
+print_graph('2022')
   
 ```
 
