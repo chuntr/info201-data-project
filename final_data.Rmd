@@ -98,7 +98,7 @@ plot_new_cases_by_month(us_new_cases_2021, "New Cases: 2021")
 plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022 (Jan - April)")
 
 us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
-plot_new_cases_by_month(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
+plot_new_cases_by_month(us_new_cases_all_years, "New cases by month: 2020")
 ```
 
 #### 2. How do different countries compare in terms of COVID-19 cases and deaths?
@@ -117,8 +117,7 @@ us_new_cases_2020 %>%
     ggplot(aes(x=month,y=new_monthly_cases/1000, color=factor(state))) +
     geom_line() +
     geom_point() +
-    labs(x="month", y="Cases per month (x 1000)", color="US State") +
-    ggtitle("New cases by month: 01/2020 - 04/2022") +
+    labs(title="New cases by month: 01/2020 - 04/2022", x="month", y="Cases per month (x 1000)", color="US State") +
     geom_vline(data=ld_us, aes(xintercept=month))
 ```
 
