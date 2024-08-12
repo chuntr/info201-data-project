@@ -44,39 +44,50 @@ get_new_cases_by_month <- function(year) {
               "Texas",
               "Florida",
               "Kentucky" )
-  
+
   this_year <- us_i %>%
-    filter(province_state %in% states) %>% 
+    filter(province_state %in% states) %>%
     filter(str_detect(date, year))
-  
+
   for(state in states) {
-    this_state_by_month <- this_year %>% 
-      filter(province_state==state) %>% 
-      group_by(month=month(date)) %>% 
-      summarize(monthly_cases=sum(case))
-    
+    this_state_by_month <- this_year %>%
+      filter(province_state == state) %>%
+      group_by(admin2) %>%
+      mutate(new_cases=case - lag(case)) %>%
+      drop_na(new_cases) %>%
+      group_by(month = month(date)) %>%
+      summarize(new_monthly_cases=sum(new_cases))
+
     yearly_data = rbind(yearly_data, this_state_by_month %>% mutate(state=state))
   }
+
+  #DEBUG
+  print(yearly_data, n=144)
+
   return(yearly_data)
 }
 
 plot_new_cases_by_month <- function(year) {
   graph_data <- get_new_cases_by_month(year)
-  print(graph_data %>% 
-    ggplot(aes(x=month,y=monthly_cases, color=factor(state))) +
+  print(graph_data %>%
+    ggplot(aes(x=month,y=new_monthly_cases, color=factor(state))) +
     geom_line() +
     geom_point() +
-    labs(x="month", y="Cases per month", ""))
+    labs(x="month", y="Cases per month", "") +
+    ggtitle(sprintf("New cases by month: %s", year))
+  )
 }
 
 plot_new_cases_by_month('2020')
+plot_new_cases_by_month('2021')
+plot_new_cases_by_month('2022')
 
-  
+
 ```
 
 #### 2. How do different countries compare in terms of COVID-19 cases and deaths?
-      - plot 
-    
+      - plot
+
 #### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
   - plot infection rate vs. lockdown times
 
