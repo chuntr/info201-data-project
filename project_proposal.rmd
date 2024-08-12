@@ -1,0 +1,92 @@
+
+### Topic:  Real-Time COVID-19 spread
+
+### Overview:
+COVID-19, caused by the SARS-CoV-2 virus, has led to a global pandemic affecting millions of people. Understanding its spread and impact is crucial for managing public health responses. This analysis aims to add detailed insights into the temporal and geographical patterns of the pandemic.
+
+### Data and Audience
+Depending on the specifics of your project, you should outline the answers to these (and perhaps other) questions:
+
+1. (Kristen) Who is your target audience? Depending on the domain of your data, there may be a variety of audiences interested in using the dataset. You should home in on one of these audiences.
+
+    - Target audience may be anyone interested in understanding COVID-19 transmission
+    - Healthcare providers to expect the amount of potential patients they might have to prepare for
+    - General public to protect themselves from the disease
+    - Government officials to know how to combat the virus by imposing certain temporary laws
+
+
+2. (Christopher) What are the datasets you’ll be working with? Please include background on who collected the data, how you can access it, and any additional information we should know about how this data came to be.
+
+    - https://www.kaggle.com/datasets/gauravduttakiit/covid-19
+      This is daily updated data on COVID-19 Infections provided by Johns Hopkins University Center for Systems Science and Engineering.
+    - https://www.kaggle.com/datasets/paultimothymooney/usa-covid19-vaccinations
+      Data about US COVID-19 vaccinations through March 2023
+    - https://www.kaggle.com/datasets/jcyzag/covid19-lockdown-dates-by-country
+      Timing of Lockdowns by country
+
+
+3. Provide a brief background: what do we already know about this topic? Why is it interesting? What do you want to add to what already exists?
+
+    - Understanding COVID-19 transmission is pretty relevant to most of the population.
+    - We need to know how virus can spread in case of future pandemics
+    - We need to know the speed of the spread of the virus to know the duration of protections and quarantines
+    - We need to know the rate of deaths to understand the severity of COVID19
+
+
+4. (Sam) What do you want to tell to your audience based on the data? Please list a few specific questions or other potential story lines you want to explore. Each group needs to have at least as many research questions as the group size (minimum 5). You may later find that some of the answers are trivial, while some story lines cannot be pursued. But here you list your initial ideas.
+
+    1. What are the trends in daily new cases and deaths globally and in specific regions?
+    
+    2. How do different countries compare in terms of COVID-19 cases and deaths?
+      - plot 
+    
+    3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
+      - plot infection rate vs. lockdown times
+    
+    4. How has the pandemic affected different age groups and genders?
+    
+    5. What is the impact of vaccination on the spread of COVID-19?
+       - plot vaccination rate vs. infection rate
+
+### Technical Description
+(Benjamin) This section asks you to think through the specific analytical steps you’ll need to complete throughout the project.
+
+1. How will you be reading in your data (i.e., are you using an API, or is it a static .csv/.json file)?
+
+    We are using multiple csv data files
+
+
+2. What kind of data cleaning and data processing (reshaping, reformatting, etc.) will you need to do to your data?
+
+    Because how the data is formatted, (rows that are ranked by segments of Location and their perspective dates), we have to splice the data set into each location.
+
+3. What (major/new) libraries you will be using in this project (no need to list common libraries that are used in many projects such as dplyr)
+
+    We need to find visualization libraries, and animation libraries to show the amount of deaths/cases in across of time. We do not know what libraries we are going to use yet.
+
+4. What questions, if any, will you be answering with statistical analysis/machine learning?
+
+    Basic visualization
+
+5. What major challenges do you anticipate?
+
+    We might not have sufficient data. Our current dataset only shows us the amount of cases and deaths, so we have to do research on the key events that might have impacted the rate of infections (mandates, lockdowns, vaccination creation)
+
+### How's group work?
+(Aaron) Please include the following in several sentences in the proposal:
+
+1. How will your group's communication go in this quarter?
+
+    Weekly meetings on zoom + text on the group chat
+
+2. Will you use any communication tools (Discord, Canvas, etc.)?
+
+    We will be using group chat and zoom to collaborate
+
+3. Do you see any problems or threats in your future group work?
+
+    TBD
+
+4. How will you divide the tasks?
+
+    TBD

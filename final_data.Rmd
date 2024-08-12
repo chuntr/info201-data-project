@@ -1,0 +1,57 @@
+---
+title: "final_data"
+author: "Chris Hunter"
+date: "2024-08-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(janitor)
+library(lubridate)
+us_i <- read_delim("infections/data/us_confirmed.csv")
+us_d <- read_delim("infections/data/us_deaths.csv")
+us_i <- clean_names(us_i)
+us_d <- clean_names(us_d)
+
+#vax <- read_delim("vax/us_state_vaccinations.csv")
+#ld <- read_delim("lockdown/countryLockdowndates.csv")
+```
+
+
+
+#### 1. What are the trends in daily new cases and deaths globally and in specific regions?
+compare monthly case totals in 2022 for select states
+```{r}
+states <- c("Washington", "California", "Colorado", "Arizona", "Ohio", "Alabama", "Missouri", "South Dakota", "New York", "Texas", "Florida", "Kentucky" )
+
+us_i_2022 <- us_i %>%
+  filter(province_state %in% states) %>% 
+  filter(str_detect(date, '2022'))
+
+us_d_2022 <- us_d %>%
+  filter(province_state %in% states) %>% 
+  filter(str_detect(date, '2022'))
+
+
+us_i_2022 %>% 
+  group_by(month = month(date)) %>% 
+  summarize(monthly_cases = sum(case))
+  
+```
+
+#### 2. How do different countries compare in terms of COVID-19 cases and deaths?
+      - plot 
+    
+#### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
+  - plot infection rate vs. lockdown times
+
+#### 4. How has the pandemic affected different age groups and genders?
+
+#### 5. What is the impact of vaccination on the spread of COVID-19?
+   - plot vaccination rate vs. infection rate
