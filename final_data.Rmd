@@ -78,20 +78,26 @@ get_new_cases_by_month <- function(year) {
 }
 
 # graph data for a specific year
-plot_new_cases_by_month <- function(year) {
-  graph_data <- get_new_cases_by_month(year)
+plot_new_cases_by_month <- function(graph_data, title) {
   print(graph_data %>%
     ggplot(aes(x=month,y=new_monthly_cases, color=factor(state))) +
     geom_line() +
     geom_point() +
-    labs(x="month", y="Cases per month", "") +
-    ggtitle(sprintf("New cases by month: %s", year))
+    labs(x="month", y="Cases per month", color="US State") +
+    ggtitle(title)
   )
 }
 
-plot_new_cases_by_month('2020')
-plot_new_cases_by_month('2021')
-plot_new_cases_by_month('2022')
+new_cases_2020 <- get_new_cases_by_month('2020')
+new_cases_2021 <- get_new_cases_by_month('2021')
+new_cases_2022 <- get_new_cases_by_month('2022')
+
+plot_new_cases_by_month(new_cases_2020, "New Cases: 2020")
+plot_new_cases_by_month(new_cases_2021, "New Cases: 2021")
+plot_new_cases_by_month(new_cases_2022, "New Cases: 2022 (Jan - April)")
+
+new_cases_all_years <- rbind(new_cases_2020, new_cases_2021, new_cases_2022)
+plot_new_cases_by_month(new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
 
 
 ```
