@@ -110,32 +110,12 @@ plot_new_cases_by_month1(us_new_cases_2021, "New Cases: 2021")
 plot_new_cases_by_month1(us_new_cases_2022, "New Cases: 2022 (Jan - April)")
 
 
-# key events that could cause an impact
-events2020 <- data.frame(
-  month = c(10),
-  label = c("emergency Pfizer vaccine")
-)
 
-events2021 <- data.frame(
-  month = c(15, 16, 17, 18,  19, 20),
-  label = c("vaccine administered", 
-            "Delta variant", 
-            "anti vaccination misinformation", 
-            "Pfizer FDA approval",
-            "mandatory federal employees",
-            "Younger age vaccines")
-)
-
-events2022 <- data.frame(
-  month = c(25, 26),
-  label = c("Expanded eligibility", 
-            "Vaccines for children")
-)
 
 us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
-plot_new_cases_by_month(us_new_cases_2020, "New Cases: 2020",events2020)
-plot_new_cases_by_month(us_new_cases_2021, "New Cases: 2021",events2021)
-plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022",events2022)
+plot_new_cases_by_month1(us_new_cases_2020, "New Cases: 2020")
+plot_new_cases_by_month1(us_new_cases_2021, "New Cases: 2021")
+plot_new_cases_by_month1(us_new_cases_2022, "New Cases: 2022")
 plot_new_cases_by_month1(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
 ```
 
@@ -183,6 +163,36 @@ but still increased slowly after lockdown.
 
 ```
 #### 4. How has the pandemic affected different age groups and genders?
+We could not find the proper data to draw any conclusion. 
 
 #### 5. What is the impact of vaccination on the spread of COVID-19?
    - plot vaccination rate vs. infection rate
+   We can see how the key events of vaccination impacts the rate of infections
+```{r}
+
+# key events that could cause an impact
+events2020 <- data.frame(
+  month = c(10),
+  label = c("emergency Pfizer vaccine")
+)
+
+events2021 <- data.frame(
+  month = c(15, 16, 17, 18,  19, 20),
+  label = c("vaccine administered", 
+            "Delta variant", 
+            "anti vaccination misinformation", 
+            "Pfizer FDA approval",
+            "mandatory federal employees",
+            "Younger age vaccines")
+)
+
+events2022 <- data.frame(
+  month = c(25, 26),
+  label = c("Expanded eligibility", 
+            "Vaccines for children")
+)
+
+ plot_new_cases_by_month(us_new_cases_2020, "New Cases: 2020",events2020)
+plot_new_cases_by_month(us_new_cases_2021, "New Cases: 2021",events2021)
+plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022",events2022)
+```
