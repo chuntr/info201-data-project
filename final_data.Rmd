@@ -6,10 +6,10 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
-```{r}
+```{r include=FALSE}
 library(tidyverse)
 library(stringr)
 library(janitor)
@@ -27,79 +27,90 @@ states <- c("Washington",
             "Florida"
             )
   
-  us_i <- clean_names(read_delim("data/us_confirmed.csv"))
-  us_d <- clean_names(read_delim("data/us_deaths.csv"))
-  
-  #vax <- read_delim("data/us_state_vaccinations.csv")
-  lockdown <-clean_names(read_delim("data/countryLockdowndates.csv"))
-  
-  # function to get new infection totals per month of a given year
-  get_new_cases_by_month <- function(year) {
-    # month scale is absolute from Jan 2020. This gives each month a unique id so
-    # we can aggregate year over year data
-    add_months <- 12 * (as.numeric(year) - 2020)
-  
-    # grab this year's data for the selected states
-    this_year <- us_i %>%
-      filter(province_state %in% states) %>%
-      filter(str_detect(date, year))
-  
-    # we'll add each month to this empty data frame in the loop below
-    yearly_data <- data.frame()
-  
-    # calculate aggregate new cases per month for each state, and add to the
-    # yearly data
-    for(state in states) {
-      this_state_by_month <- this_year %>%
-        filter(province_state == state) %>%
-        group_by(admin2) %>%
-        mutate(new_cases=case - lag(case)) %>%
-        drop_na(new_cases) %>%
-        group_by(month=month(date) + add_months) %>%
-        summarize(new_monthly_cases=sum(new_cases))
-  
-      yearly_data = rbind(yearly_data, this_state_by_month %>% mutate(state=state))
-    }
-  
-    return(yearly_data)
-  }
-  
-  plot_new_cases_by_month1 <- function(graph_data, title) {
-    print(graph_data %>%
-      ggplot(aes(x = month, y = new_monthly_cases / 1000, color = factor(state))) +
-      geom_line() +
-      geom_point() +
-      labs(title = title, x = "Month", y = "Cases per month (x 1000)", color = "US State") +
-      theme_minimal()
-    )
+us_i <- clean_names(read_delim("data/us_confirmed.csv"))
+us_d <- clean_names(read_delim("data/us_deaths.csv"))
+countries <- clean_names(read_delim("data/key-countries-pivoted.csv"))
+
+us_v <- clean_names(read_delim("data/us_state_vaccinations.csv"))
+lockdown <-clean_names(read_delim("data/countryLockdowndates.csv"))
+
+# function to get new infection totals per month of a given year
+get_new_cases_by_month <- function(data, year) {
+  # month scale is absolute from Jan 2020. This gives each month a unique id so
+  # we can aggregate year over year data
+  add_months <- 12 * (as.numeric(year) - 2020)
+
+  # grab this year's data for the selected states
+  this_year <- data %>%
+    filter(province_state %in% states) %>%
+    filter(str_detect(date, year))
+
+  # we'll add each month to this empty data frame in the loop below
+  yearly_data <- data.frame()
+
+  # calculate aggregate new cases per month for each state, and add to the
+  # yearly data
+  for(state in states) {
+    this_state_by_month <- this_year %>%
+      filter(province_state == state) %>%
+      group_by(admin2) %>%
+      mutate(new_cases=case - lag(case)) %>%
+      drop_na(new_cases) %>%
+      group_by(month=month(date) + add_months) %>%
+      summarize(new_monthly_cases=sum(new_cases))
+
+    yearly_data = rbind(yearly_data, this_state_by_month %>% mutate(state=state))
   }
 
-    
+  return(yearly_data)
+}
 
-# function to graph new infections data for a specific year
+plot_new_cases_by_month <- function(graph_data, title) {
+  print(graph_data %>%
+    ggplot(aes(x = month, y = new_monthly_cases / 1000, color = factor(state))) +
+    geom_line() +
+    geom_point() +
+    labs(title = title, x = "Month", y = "Cases per month (x 1000)", color = "US State") +
+    theme_minimal()
+  )
+}
+
+plot_new_cases_by_month_event <- function(graph_data, title, events) {
+  p <- graph_data %>%
+    ggplot(aes(x = month, y = new_monthly_cases / 1000, color = factor(state))) +
+    geom_line() +
+    geom_point() +
+    labs(title = title, x = "Month", y = "Cases per month (x 1000)", color = "US State") +
+    geom_vline(data = events,
+               aes(xintercept = month), color = "red", linetype = "dashed") +
+    geom_text(data = events,
+              aes(x = month, y = Inf, label = label), 
+              vjust = 1.5, hjust = 1.5, color = "red", angle = 90) +
+    theme_minimal()
+
+    return(p)
+}
 
 ```
 
+### Research Questions
 
 #### 1. What are the trends in daily new cases and deaths globally and in specific regions?
 
-Here we'll compare monthly new case totals for select states
+##### Comparing infections
 
 ```{r}
 
-
 # get data for each year
-us_new_cases_2020 <- get_new_cases_by_month('2020')
-us_new_cases_2021 <- get_new_cases_by_month('2021')
-us_new_cases_2022 <- get_new_cases_by_month('2022')
+us_new_cases_2020 <- get_new_cases_by_month(us_i, '2020')
+us_new_cases_2021 <- get_new_cases_by_month(us_i, '2021')
+us_new_cases_2022 <- get_new_cases_by_month(us_i, '2022')
 
 # make yearly graphs
-plot_new_cases_by_month1(us_new_cases_2020, "New Cases: 2020")
-plot_new_cases_by_month1(us_new_cases_2021, "New Cases: 2021")
-plot_new_cases_by_month1(us_new_cases_2022, "New Cases: 2022 (Jan - April)")
+plot_new_cases_by_month(us_new_cases_2020, "New Cases: 2020")
+plot_new_cases_by_month(us_new_cases_2021, "New Cases: 2021")
+plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022 (Jan - April)")
 
-us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
-plot_new_cases_by_month1(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
 ```
 
 We can see some obvious trends here, especially looking at the whole timeline. The Holiday
@@ -116,10 +127,123 @@ Everything trends pretty low at the end of our data in April 2022. Looking at so
 sources, there was a mild peak the following summer, but levels have remained fairly low
 since then. We haven't seen any really big surges since the end of 2021.
 
-#### 2. How do different states compare in terms of COVID-19 cases and deaths?
-```{r}
-us_v <- clean_names(read_delim("data/us_state_vaccinations.csv"))
+##### Comparing deaths
 
+```{r}
+# get data for each year
+us_new_deaths_2020 <- get_new_cases_by_month(us_d, '2020')
+us_new_deaths_2021 <- get_new_cases_by_month(us_d, '2021')
+us_new_deaths_2022 <- get_new_cases_by_month(us_d, '2022')
+
+# make yearly graphs
+plot_new_cases_by_month(us_new_deaths_2020, "New Deaths: 2020")
+plot_new_cases_by_month(us_new_deaths_2021, "New Deaths: 2021")
+plot_new_cases_by_month(us_new_deaths_2022, "New Deaths: 2022 (Jan - April)")
+```
+
+We see similar trend lines for each year, though there is a very large initial
+spike for New York. Also deaths tend to fall away at a slower rate than infections
+for spikes in the same time period. Again, large population centers seem to be
+hit hardest.
+
+##### Infections vs. Deaths
+```{r}
+us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
+plot_new_cases_by_month(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
+
+us_new_deaths_all_years <- rbind(us_new_deaths_2020, us_new_deaths_2021, us_new_deaths_2022)
+plot_new_cases_by_month(us_new_deaths_all_years, "New deaths by month: 01/2020 - 04/2022")
+```
+We can see clearly that deaths were much more severe in the earlier months of the
+pandemic. Very large spikes early on, especially in New York, but we see that even
+the biggest infection spikes in 2021 had relatively fewer deaths associated with
+the same time periods.
+
+#### 2. How do different countries compare in terms of COVID-19 cases
+```{r}
+countries_pivoted <- countries %>%
+  pivot_longer(!date, names_to="country", values_to="cases")
+
+countries_pivoted %>% 
+  group_by(date) %>% 
+  ggplot(aes(x=date, y=cases/1000000, color=factor(country))) +
+  geom_path() +
+  labs(title="Infections by Country", x="Date", y="Cases (millions)", color="Country")
+```
+
+We can see an obvious trend that infections in the US are far higher than the other
+key countries throughout the timeline, though the US has proportionally more population
+than many of the countries here. China is an outlier in that their reported numbers
+are very low for their large population.
+
+Additionally we can see that total cases actually increased at a much higher rate 
+starting in early 2022. People tend to regard the first two years as the most
+impactful time, but we can see that infections actually have skyrocketed after that.
+
+We can hypothesize that in 2022 and later, many citizens felt protected by the
+vaccine and were less concerned about contracting covid, so they may have begun
+to engage in more social behaviors which allowed the virus to spread more rapidly.
+
+#### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
+
+Here we add some marks for when lockdowns occured in the USA.
+```{r}
+ld_us <- lockdown %>% 
+  filter(country_region == "US") %>% 
+  filter(province %in% states) %>% 
+  group_by(month=as.numeric(month(date))) %>% 
+  reframe(month, label=province)
+
+plot_new_cases_by_month_event(us_new_cases_2020, "New Cases: 2020", ld_us)
+```
+
+For the USA, this data is not that interesting because every lockdown happened in March or April of 2020 for states
+that had a lockdown. New York seemed to get the most benefit out of these 8. In other states, growth mainly slowed
+but still increased slowly after lockdown.
+
+Data for other countries is pretty similar. Lockdowns all began roughly in the
+first 4 months of 2020, so it's difficult to draw any meaningful conclusions about
+their effects, especially since infection rates were relatively low for many areas
+in the very early part of the pandemic.
+
+Additionally, many lockdowns were lifted, put back in place, and lifted again
+several times over, and the timing of this varied widely between countries and
+in different US states, so there is often not a direct timeline equivalent between
+different areas that would be useful to compare.
+
+
+#### 4. What is the impact of vaccination on the spread of COVID-19?
+We can map a few key events in the vaccination timeline to the rate of infections
+
+```{r}
+# key events that could cause an impact
+events2020 <- data.frame(
+  month = c(10),
+  label = c("emergency Pfizer vaccine")
+)
+
+events2021 <- data.frame(
+  month = c(12, 16, 17, 18,  19, 20),
+  label = c("vaccine administered", 
+            "Delta variant", 
+            "anti vaccination misinformation", 
+            "Pfizer FDA approval",
+            "mandatory federal employees",
+            "Younger age vaccines")
+)
+
+events2022 <- data.frame(
+  month = c(25, 26),
+  label = c("Expanded eligibility", 
+            "Vaccines for children")
+)
+
+combined_events <- bind_rows(events2020, events2021, events2022)
+plot_new_cases_by_month_event(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022 with vaccine events", combined_events)
+```
+
+#### 5. How does the rate of vaccinations compare to the infection rate?
+```{r}
 us_v_us <- us_v %>%
   filter(location == "United States") %>%
   arrange(date) %>%
@@ -156,80 +280,3 @@ ggplot(combined_data, aes(x = month)) +
           plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
-
-#### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
-
-Here we add some marks for when lockdowns occured in the USA.
-```{r}
-ld_us <- lockdown %>% 
-  filter(country_region == "US") %>% 
-  filter(province %in% states) %>% 
-  group_by(month=as.numeric(month(date)))
-
-us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
-
-us_new_cases_2020 %>% 
-    ggplot(aes(x=month,y=new_monthly_cases/1000, color=factor(state))) +
-    geom_line() +
-    geom_point() +
-    labs(title="New cases by month: 2020 with lockdowns", x="month", y="Cases per month (x 1000)", color="US State") +
-    geom_vline(data=ld_us, aes(xintercept=month))
-    #geom_text(data=ld_us, aes(x=month, y=100 * as.numeric(province), label=province), inherit.aes=FALSE)
-```
-For the USA, this data is not that interesting because every lockdown happened in March or April of 2020 for states
-that had a lockdown. New York seemed to get the most benefit out of these 8. In other states, growth mainly slowed
-but still increased slowly after lockdown.
-
-
-#### 4. How has the pandemic affected different age groups and genders?
-We could not find the proper data to draw any conclusion. 
-
-#### 5. What is the impact of vaccination on the spread of COVID-19?
-   - plot vaccination rate vs. infection rate
-   We can see how the key events of vaccination impacts the rate of infections
-```{r}
-plot_new_cases_by_month <- function(graph_data, title, events) {
-  p <- graph_data %>%
-    ggplot(aes(x = month, y = new_monthly_cases / 1000, color = factor(state))) +
-    geom_line() +
-    geom_point() +
-    labs(title = title, x = "Month", y = "Cases per month (x 1000)", color = "US State") +
-    geom_vline(data = events, aes(xintercept = month), color = "red", linetype = "dashed") +
-    geom_text(data = events, aes(x = month, y = Inf, label = label), 
-              vjust = 1.5, hjust = 0.5, color = "red", angle = 90) +
-    theme_minimal()
-  
-  return(p)
-}
-
-# key events that could cause an impact
-events2020 <- data.frame(
-  month = c(10),
-  label = c("emergency Pfizer vaccine")
-)
-
-events2021 <- data.frame(
-  month = c(12, 16, 17, 18,  19, 20),
-  label = c("vaccine administered", 
-            "Delta variant", 
-            "anti vaccination misinformation", 
-            "Pfizer FDA approval",
-            "mandatory federal employees",
-            "Younger age vaccines")
-)
-
-events2022 <- data.frame(
-  month = c(25, 26),
-  label = c("Expanded eligibility", 
-            "Vaccines for children")
-)
-
-
-combined_events <- bind_rows(events2020, events2021, events2022)
-
-library(patchwork)
-us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
-plot_new_cases_by_month(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022",combined_events )
-
-
-```
