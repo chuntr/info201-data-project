@@ -16,11 +16,11 @@ library(janitor)
 library(lubridate)
 
 
-us_i <- clean_names(read_delim("infections/data/us_confirmed.csv"))
-us_d <- clean_names(read_delim("infections/data/us_deaths.csv"))
+us_i <- clean_names(read_delim("data/us_confirmed.csv"))
+us_d <- clean_names(read_delim("data/us_deaths.csv"))
 
-#vax <- read_delim("vax/us_state_vaccinations.csv")
-lockdown <-clean_names(read_delim("lockdown/countryLockdowndates.csv"))
+#vax <- read_delim("data/us_state_vaccinations.csv")
+lockdown <-clean_names(read_delim("data/countryLockdowndates.csv"))
 
 # function to get new infection totals per month of a given year
 get_new_cases_by_month <- function(year) {
