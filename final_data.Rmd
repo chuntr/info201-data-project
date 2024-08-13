@@ -53,6 +53,17 @@ get_new_cases_by_month <- function(year) {
   return(yearly_data)
 }
 
+
+plot_new_cases_by_month1 <- function(graph_data, title) {
+  print(graph_data %>%
+    ggplot(aes(x = month, y = new_monthly_cases / 1000, color = factor(state))) +
+    geom_line() +
+    geom_point() +
+    labs(title = title, x = "Month", y = "Cases per month (x 1000)", color = "US State") +
+    theme_minimal()
+  )
+}
+
 # function to graph new infections data for a specific year
 plot_new_cases_by_month <- function(graph_data, title, events) {
   print(graph_data %>%
@@ -94,9 +105,9 @@ us_new_cases_2021 <- get_new_cases_by_month('2021')
 us_new_cases_2022 <- get_new_cases_by_month('2022')
 
 # make yearly graphs
-plot_new_cases_by_month(us_new_cases_2020, "New Cases: 2020")
-plot_new_cases_by_month(us_new_cases_2021, "New Cases: 2021")
-plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022 (Jan - April)")
+plot_new_cases_by_month1(us_new_cases_2020, "New Cases: 2020")
+plot_new_cases_by_month1(us_new_cases_2021, "New Cases: 2021")
+plot_new_cases_by_month1(us_new_cases_2022, "New Cases: 2022 (Jan - April)")
 
 
 # key events that could cause an impact
@@ -119,12 +130,13 @@ events2022 <- data.frame(
   month = c(25, 26),
   label = c("Expanded eligibility", 
             "Vaccines for children")
+)
 
 us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
 plot_new_cases_by_month(us_new_cases_2020, "New Cases: 2020",events2020)
 plot_new_cases_by_month(us_new_cases_2021, "New Cases: 2021",events2021)
 plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022",events2022)
-plot_new_cases_by_month(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
+plot_new_cases_by_month1(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
 ```
 
 We can see some obvious trends here, especially looking at the whole timeline. The Holiday
