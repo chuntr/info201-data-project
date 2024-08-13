@@ -14,8 +14,7 @@ library(tidyverse)
 library(stringr)
 library(janitor)
 library(lubridate)
-library(patchwork)
-
+library(scales)
 
 # A random list of US states
 states <- c("Washington",
