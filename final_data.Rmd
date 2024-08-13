@@ -93,11 +93,15 @@ plot_new_cases_by_month_event <- function(graph_data, title, events) {
 
 ```
 
-### Research Questions
+# Research Questions {.tabset}
 
-#### 1. What are the trends in daily new cases and deaths globally and in specific regions?
+## US Covid Trends
 
-##### Comparing infections
+### 1. What are the trends in monthly new cases and deaths for US states?
+
+We'll look at a few semi-random US states here and compare rates
+
+#### Comparing infections
 
 ```{r}
 
@@ -127,7 +131,7 @@ Everything trends pretty low at the end of our data in April 2022. Looking at so
 sources, there was a mild peak the following summer, but levels have remained fairly low
 since then. We haven't seen any really big surges since the end of 2021.
 
-##### Comparing deaths
+#### Comparing deaths
 
 ```{r}
 # get data for each year
@@ -146,7 +150,7 @@ spike for New York. Also deaths tend to fall away at a slower rate than infectio
 for spikes in the same time period. Again, large population centers seem to be
 hit hardest.
 
-##### Infections vs. Deaths
+#### Infections vs. Deaths
 ```{r}
 us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
 plot_new_cases_by_month(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
@@ -159,7 +163,9 @@ pandemic. Very large spikes early on, especially in New York, but we see that ev
 the biggest infection spikes in 2021 had relatively fewer deaths associated with
 the same time periods.
 
-#### 2. How do different countries compare in terms of COVID-19 cases
+## Key Countries
+
+### 2. How do different countries compare in terms of COVID-19 cases?
 ```{r}
 countries_pivoted <- countries %>%
   pivot_longer(!date, names_to="country", values_to="cases")
@@ -184,7 +190,9 @@ We can hypothesize that in 2022 and later, many citizens felt protected by the
 vaccine and were less concerned about contracting covid, so they may have begun
 to engage in more social behaviors which allowed the virus to spread more rapidly.
 
-#### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
+## Lockdowns
+
+### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
 
 Here we add some marks for when lockdowns occured in the USA.
 ```{r}
@@ -211,8 +219,9 @@ several times over, and the timing of this varied widely between countries and
 in different US states, so there is often not a direct timeline equivalent between
 different areas that would be useful to compare.
 
+## Impact of Vaccines
 
-#### 4. What is the impact of vaccination on the spread of COVID-19?
+### 4. What is the impact of vaccination on the spread of COVID-19?
 We can map a few key events in the vaccination timeline to the rate of infections
 
 ```{r}
@@ -242,7 +251,10 @@ combined_events <- bind_rows(events2020, events2021, events2022)
 plot_new_cases_by_month_event(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022 with vaccine events", combined_events)
 ```
 
-#### 5. How does the rate of vaccinations compare to the infection rate?
+## Vax rates vs. infections
+
+### 5. How does the rate of vaccinations compare to the infection rate?
+
 ```{r}
 us_v_us <- us_v %>%
   filter(location == "United States") %>%
