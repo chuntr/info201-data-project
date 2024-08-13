@@ -54,12 +54,16 @@ get_new_cases_by_month <- function(year) {
 }
 
 # function to graph new infections data for a specific year
-plot_new_cases_by_month <- function(graph_data, title) {
+plot_new_cases_by_month <- function(graph_data, title, events) {
   print(graph_data %>%
-    ggplot(aes(x=month, y=new_monthly_cases/1000, color=factor(state))) +
+    ggplot(aes(x = month, y = new_monthly_cases / 1000, color = factor(state))) +
     geom_line() +
     geom_point() +
-    labs(title=title, x="month", y="Cases per month (x 1000)", color="US State")
+    labs(title = title, x = "Month", y = "Cases per month (x 1000)", color = "US State") +
+    geom_vline(data = events, aes(xintercept = month), color = "red", linetype = "dashed") +
+    geom_text(data = events, aes(x = month, y = Inf, label = label), 
+              vjust = 1.5, hjust = 0.5, color = "red", angle = 90) +
+    theme_minimal()
   )
 }
 ```
@@ -94,7 +98,32 @@ plot_new_cases_by_month(us_new_cases_2020, "New Cases: 2020")
 plot_new_cases_by_month(us_new_cases_2021, "New Cases: 2021")
 plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022 (Jan - April)")
 
+
+# key events that could cause an impact
+events2020 <- data.frame(
+  month = c(10),
+  label = c("emergency Pfizer vaccine")
+)
+
+events2021 <- data.frame(
+  month = c(15, 16, 17, 18,  19, 20),
+  label = c("vaccine administered", 
+            "Delta variant", 
+            "anti vaccination misinformation", 
+            "Pfizer FDA approval",
+            "mandatory federal employees",
+            "Younger age vaccines")
+)
+
+events2022 <- data.frame(
+  month = c(25, 26),
+  label = c("Expanded eligibility", 
+            "Vaccines for children")
+
 us_new_cases_all_years <- rbind(us_new_cases_2020, us_new_cases_2021, us_new_cases_2022)
+plot_new_cases_by_month(us_new_cases_2020, "New Cases: 2020",events2020)
+plot_new_cases_by_month(us_new_cases_2021, "New Cases: 2021",events2021)
+plot_new_cases_by_month(us_new_cases_2022, "New Cases: 2022",events2022)
 plot_new_cases_by_month(us_new_cases_all_years, "New cases by month: 01/2020 - 04/2022")
 ```
 
