@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-```{r}
+```{r include=FALSE}
 library(tidyverse)
 library(stringr)
 library(janitor)
@@ -30,9 +30,12 @@ states <- c("Washington",
   
 us_i <- clean_names(read_delim("data/us_confirmed.csv"))
 us_d <- clean_names(read_delim("data/us_deaths.csv"))
+countries <- clean_names(read_delim("data/key-countries-pivoted.csv"))
 
-#vax <- read_delim("data/us_state_vaccinations.csv")
+vax <- clean_names(read_delim("data/us_state_vaccinations.csv"))
 lockdown <-clean_names(read_delim("data/countryLockdowndates.csv"))
+
+
 
 # function to get new infection totals per month of a given year
 get_new_cases_by_month <- function(data, year) {
@@ -64,8 +67,7 @@ get_new_cases_by_month <- function(data, year) {
 
   return(yearly_data)
 }
-  
-  
+
 plot_new_cases_by_month <- function(graph_data, title) {
   print(graph_data %>%
     ggplot(aes(x = month, y = new_monthly_cases / 1000, color = factor(state))) +
@@ -95,7 +97,7 @@ plot_new_cases_by_month_event <- function(graph_data, title, events) {
 # function to graph new infections data for a specific year
 
 ```
-
+### Research Questions
 
 #### 1. What are the trends in daily new cases and deaths globally and in specific regions?
 
@@ -147,7 +149,8 @@ plot_new_cases_by_month(us_new_deaths_2022, "New Deaths: 2022 (Jan - April)")
 
 We see similar trend lines for each year, though there is a very large initial
 spike for New York. Also deaths tend to fall away at a slower rate than infections
-for spikes in the same time period.
+for spikes in the same time period. Again, large population centers seem to be
+hit hardest.
 
 ##### Infections vs. Deaths
 ```{r}
@@ -157,13 +160,25 @@ plot_new_cases_by_month(us_new_cases_all_years, "New cases by month: 01/2020 - 0
 us_new_deaths_all_years <- rbind(us_new_deaths_2020, us_new_deaths_2021, us_new_deaths_2022)
 plot_new_cases_by_month(us_new_deaths_all_years, "New deaths by month: 01/2020 - 04/2022")
 ```
+We can see clearly that deaths were much more severe in the earlier months of the
+pandemic. Very large spikes early on, especially in New York, but we see that even
+the biggest infection spikes in 2021 had relatively fewer deaths associated with
+the same time periods.
 
-#### 2. How do different states compare in terms of COVID-19 cases and deaths?
+#### 2. How do different countries compare in terms of COVID-19 cases
 ```{r}
-  us_v <- clean_names(read_delim("data/us_state_vaccinations.csv"))
+countries_pivoted <- countries %>%
+  pivot_longer(!date, names_to="country", values_to="cases")
 
+countries_pivoted %>% 
+  group_by(date) %>% 
+  ggplot(aes(x=date, y=cases/1000000, color=factor(country))) +
+  geom_path() +
+  labs(title="Infections by Country", x="Date", y="Cases (millions)", color="Country")
 ```
 
+We can see an obvious trend that infections in the US are far higher than the other
+key countries.
 
 #### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
 
