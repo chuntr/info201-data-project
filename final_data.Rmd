@@ -178,7 +178,17 @@ countries_pivoted %>%
 ```
 
 We can see an obvious trend that infections in the US are far higher than the other
-key countries.
+key countries throughout the timeline, though the US has proportionally more population
+than many of the countries here. China is an outlier in that their reported numbers
+are very low for their large population.
+
+Additionally we can see that total cases actually increased at a much higher rate 
+starting in early 2022. People tend to regard the first two years as the most
+impactful time, but we can see that infections actually have skyrocketed after that.
+
+We can hypothesize that in 2022 and later, many citizens felt protected by the
+vaccine and were less concerned about contracting covid, so they may have begun
+to engage in more social behaviors which allowed the virus to spread more rapidly.
 
 #### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
 
@@ -197,8 +207,20 @@ For the USA, this data is not that interesting because every lockdown happened i
 that had a lockdown. New York seemed to get the most benefit out of these 8. In other states, growth mainly slowed
 but still increased slowly after lockdown.
 
+Data for other countries is pretty similar. Lockdowns all began roughly in the
+first 4 months of 2020, so it's difficult to draw any meaningful conclusions about
+their effects, especially since infection rates were relatively low for many areas
+in the very early part of the pandemic.
+
+Additionally, many lockdowns were lifted, put back in place, and lifted again
+several times over, and the timing of this varied widely between countries and
+in different US states, so there is often not a direct timeline equivalent between
+different areas that would be useful to compare.
+
+
 #### 4. How has the pandemic affected different age groups and genders?
-We could not find the proper data to draw any conclusion. 
+Unfortunately, we could not find a dataset with good demograhphic data to 
+answer this question.
 
 #### 5. What is the impact of vaccination on the spread of COVID-19?
 We can see how the key events of vaccination impacts the rate of infections
