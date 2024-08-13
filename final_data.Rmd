@@ -65,7 +65,6 @@ states <- c("Washington",
     return(yearly_data)
   }
   
-  
   plot_new_cases_by_month1 <- function(graph_data, title) {
     print(graph_data %>%
       ggplot(aes(x = month, y = new_monthly_cases / 1000, color = factor(state))) +
@@ -75,6 +74,8 @@ states <- c("Washington",
       theme_minimal()
     )
   }
+
+    
 
 # function to graph new infections data for a specific year
 
@@ -118,8 +119,42 @@ since then. We haven't seen any really big surges since the end of 2021.
 
 #### 2. How do different states compare in terms of COVID-19 cases and deaths?
 ```{r}
-  us_v <- clean_names(read_delim("data/us_state_vaccinations.csv"))
+us_v <- clean_names(read_delim("data/us_state_vaccinations.csv"))
 
+us_v_us <- us_v %>%
+  filter(location == "United States") %>%
+  arrange(date) %>%
+  fill(total_vaccinations, .direction = "down") %>%
+  mutate(new_vaccinations = total_vaccinations - lag(total_vaccinations, default = 0)) %>%
+  mutate(month = floor_date(date, "month"))  %>%
+  group_by(month) %>%
+  summarise(new_vaccinations = sum(new_vaccinations, na.rm = TRUE))
+
+us_i <- clean_names(read_delim("data/us_confirmed.csv"))
+
+us_i_us <- us_i %>% 
+  group_by(date) %>%
+  summarise(total_cases = sum(case, na.rm = TRUE)) %>%
+  mutate(new_cases = total_cases - lag(total_cases, default = 0)) %>%
+  mutate(month = floor_date(date, "month")) %>%
+  group_by(month) %>%
+  summarise(new_cases = sum(new_cases, na.rm = TRUE))
+
+combined_data <- us_v_us %>%
+  full_join(us_i_us, by = "month")
+
+ggplot(combined_data, aes(x = month)) +
+    geom_line(aes(y = new_vaccinations, color = "New Vaccinations"), size = 1) +
+    geom_line(aes(y = new_cases, color = "New Cases"), size = 1) +
+    labs(title = "Monthly New Vaccinations and New Cases in the US",
+         x = "Month",
+         y = "Count",
+         color = "Legend") +
+    scale_x_date(date_labels = "%Y-%m", date_breaks = "1 month") +
+    scale_y_continuous(labels = label_number()) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
 
