@@ -88,7 +88,7 @@ plot_new_cases_by_month_event <- function(graph_data, title, events) {
                aes(xintercept = month), color = "red", linetype = "dashed") +
     geom_text(data = events,
               aes(x = month, y = Inf, label = label), 
-              vjust = 1.5, hjust = 0.5, color = "red", angle = 90) +
+              vjust = 1.5, hjust = 1.5, color = "red", angle = 90) +
     theme_minimal()
 
     return(p)
