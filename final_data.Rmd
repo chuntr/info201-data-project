@@ -1,6 +1,6 @@
 ---
 title: "final_data"
-author: "Chris Hunter"
+author: "AB3: Yuxuan Kristin Chen, Christopher Hunter, Sam Malik, Aaron Qiu, Benjamin So"
 date: "2024-08-12"
 output: html_document
 ---
@@ -26,7 +26,7 @@ states <- c("Washington",
             "Texas",
             "Florida"
             )
-  
+
 us_i <- clean_names(read_delim("data/us_confirmed.csv"))
 us_d <- clean_names(read_delim("data/us_deaths.csv"))
 countries <- clean_names(read_delim("data/key-countries-pivoted.csv"))
@@ -84,7 +84,7 @@ plot_new_cases_by_month_event <- function(graph_data, title, events) {
     geom_vline(data = events,
                aes(xintercept = month), color = "red", linetype = "dashed") +
     geom_text(data = events,
-              aes(x = month, y = Inf, label = label), 
+              aes(x = month, y = Inf, label = label),
               vjust = 1.5, hjust = 1.5, color = "red", angle = 90) +
     theme_minimal()
 
@@ -170,8 +170,8 @@ the same time periods.
 countries_pivoted <- countries %>%
   pivot_longer(!date, names_to="country", values_to="cases")
 
-countries_pivoted %>% 
-  group_by(date) %>% 
+countries_pivoted %>%
+  group_by(date) %>%
   ggplot(aes(x=date, y=cases/1000000, color=factor(country))) +
   geom_path() +
   labs(title="Infections by Country", x="Date", y="Cases (millions)", color="Country")
@@ -182,7 +182,7 @@ key countries throughout the timeline, though the US has proportionally more pop
 than many of the countries here. China is an outlier in that their reported numbers
 are very low for their large population.
 
-Additionally we can see that total cases actually increased at a much higher rate 
+Additionally we can see that total cases actually increased at a much higher rate
 starting in early 2022. People tend to regard the first two years as the most
 impactful time, but we can see that infections actually have skyrocketed after that.
 
@@ -195,14 +195,18 @@ to engage in more social behaviors which allowed the virus to spread more rapidl
 ### 3. What is the relationship between public health measures (e.g., lockdowns) and the trends in COVID-19 cases?
 
 Here we add some marks for when lockdowns occured in the USA.
-```{r}
-ld_us <- lockdown %>% 
-  filter(country_region == "US") %>% 
-  filter(province %in% states) %>% 
-  group_by(month=as.numeric(month(date))) %>% 
+```{r fig.width=10}
+ld_us <- lockdown %>%
+  filter(country_region == "US") %>%
+  filter(province %in% states) %>%
+  mutate(date=dmy(date)) %>%
+  group_by(month=as.numeric(yday(date) / 30) + 1 ) %>%
   reframe(month, label=province)
 
-plot_new_cases_by_month_event(us_new_cases_2020, "New Cases: 2020", ld_us)
+early_2020_cases <-us_new_cases_2020 %>%
+  filter(month < 6, month > 2)
+
+plot_new_cases_by_month_event(early_2020_cases, "New Cases: 2020: March - May", ld_us)
 ```
 
 For the USA, this data is not that interesting because every lockdown happened in March or April of 2020 for states
@@ -224,7 +228,7 @@ different areas that would be useful to compare.
 ### 4. What is the impact of vaccination on the spread of COVID-19?
 We can map a few key events in the vaccination timeline to the rate of infections
 
-```{r}
+```{r fig.width=10}
 # key events that could cause an impact
 events2020 <- data.frame(
   month = c(10),
@@ -233,9 +237,9 @@ events2020 <- data.frame(
 
 events2021 <- data.frame(
   month = c(12, 16, 17, 18,  19, 20),
-  label = c("vaccine administered", 
-            "Delta variant", 
-            "anti vaccination misinformation", 
+  label = c("vaccine administered",
+            "Delta variant",
+            "anti vaccination misinformation",
             "Pfizer FDA approval",
             "mandatory federal employees",
             "Younger age vaccines")
@@ -243,7 +247,7 @@ events2021 <- data.frame(
 
 events2022 <- data.frame(
   month = c(25, 26),
-  label = c("Expanded eligibility", 
+  label = c("Expanded eligibility",
             "Vaccines for children")
 )
 
@@ -255,7 +259,7 @@ plot_new_cases_by_month_event(us_new_cases_all_years, "New cases by month: 01/20
 
 ### 5. How does the rate of vaccinations compare to the infection rate?
 
-```{r}
+```{r fig.width=10}
 us_v_us <- us_v %>%
   filter(location == "United States") %>%
   arrange(date) %>%
@@ -267,7 +271,7 @@ us_v_us <- us_v %>%
 
 us_i <- clean_names(read_delim("data/us_confirmed.csv"))
 
-us_i_us <- us_i %>% 
+us_i_us <- us_i %>%
   group_by(date) %>%
   summarise(total_cases = sum(case, na.rm = TRUE)) %>%
   mutate(new_cases = total_cases - lag(total_cases, default = 0)) %>%
