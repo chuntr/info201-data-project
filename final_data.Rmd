@@ -32,6 +32,7 @@ us_d <- clean_names(read_delim("data/us_deaths.csv"))
 countries <- clean_names(read_delim("data/key-countries-pivoted.csv"))
 
 us_v <- clean_names(read_delim("data/us_state_vaccinations.csv"))
+
 lockdown <-clean_names(read_delim("data/countryLockdowndates.csv"))
 
 # function to get new infection totals per month of a given year
@@ -92,6 +93,72 @@ plot_new_cases_by_month_event <- function(graph_data, title, events) {
 }
 
 ```
+# Overview {.tabset}
+
+## Abstract
+
+Short summary of our findings
+
+## Introduction
+
+Talk about Covid here
+
+## Data
+
+Our Data was gathered from the following sets available on Kaggle. These are free for public use.
+
+    - https://www.kaggle.com/datasets/gauravduttakiit/covid-19/data
+      This is daily updated data on COVID-19 Infections provided by Johns Hopkins University Center for Systems Science and Engineering.
+
+      from this we used 3 data sets:
+        - us infections:
+          - 5 columns, used: region (county), state, year, number of infections
+          - 2,727,072 rows
+        - us deaths
+          - 5 columns, used: region (county), state, year, number of deaths
+          - 2,727,072 rows
+        - countries.   : 9 columns, 816 rows
+
+    - https://www.kaggle.com/datasets/paultimothymooney/usa-covid19-vaccinations
+      Data about US COVID-19 vaccinations through March 2023
+
+        -  vaccinations:
+          - 16 columns, used: month, new_vaccinations
+          - 54,628 rows
+
+
+    - https://www.kaggle.com/datasets/jcyzag/covid19-lockdown-dates-by-country
+      Timing of Lockdowns by country
+
+        - lockdown data:
+          - 5 columns, used: province, date
+          - 307 rows
+
+## Methods
+
+We chose to look at new daily infections/deaths per region for most of our analysis.
+This presented a problem because all of the relevant data was only available as
+values for running totals over time. We had to do a number of manipulations to the
+dataset to create what we wanted to analyze:
+
+- Filter to a limited selection of US states (to avoid cluttering the graphs, and to reduce the amount of data we needed to process)
+- Filter cases by year, to be able to compare different periods (seasonal trends, etc)
+- Calculate monthly new cases per region by summing daily totals for each month
+- Convert time scale to months from start of pandemic. This made it easier to take data for each year and combine it to see long term trends.
+- Aggregate monthly totals for each region into the appropriate state
+
+We used a few functions to automate this process, and also to do some of the
+plotting, in cases where we were analyzing different sections of similar data.
+
+We eliminated some null fields, such as new cases on the first of the month
+
+## Findings
+
+Conclusions here
+
+## Summary
+
+Summary here
 
 # Research Questions {.tabset}
 
@@ -284,7 +351,7 @@ the spread of the virus.
 
 Across the states shown, the trends are remarkably similar, with all experiencing
 peaks at similar times, reflecting the nationwide impact of variants and\
-vaccine-related policies. 
+vaccine-related policies.
 
 Conclusion: We can see correlations between infection rates and when various
 vaccine developments happened.
