@@ -124,7 +124,7 @@ from this we used 3 data sets:
 This was reliable data that has been updated daily for the 2000 to mid-2022 time
 period, collected from reliable sources like the WHO, CDC, and numerous state
 health departments.
-  
+
 
 https://www.kaggle.com/datasets/paultimothymooney/usa-covid19-vaccinations
 Data about US COVID-19 vaccinations through March 2023
@@ -156,7 +156,7 @@ This presented a problem because all of the relevant data was only available as
 values for running totals over time. We had to do a number of manipulations to the
 dataset to create what we wanted to analyze:
 
-- Filter to a limited selection of US states 
+- Filter to a limited selection of US states
 - Filter cases by year, to be able to compare different periods (seasonal trends, etc)
 - Calculate monthly new cases per region by summing daily totals for each month
 - Convert time scale to months from start of pandemic. T
@@ -171,11 +171,11 @@ We didn't run into any real quality issues with the data, aside from that there
 didn't seem to be a lot of up-to-date/current stats about Covid infections available.
 Most datasets are only for the first couple of years.
 
-For most of our findings we concentrated on data from US states. We selected a 
+For most of our findings we concentrated on data from US states. We selected a
 few to represent major geographical areas and large population centers. Originally
 we looked at a few more states, but the data wasn't especially different from
 others we still had in the set and didn't display any major anomalies. This was
-mostly the case in areas that didn't have major population centers. 
+mostly the case in areas that didn't have major population centers.
 
 We also chose to calculate the time scale as months from start of the pandemic.
 This made it easier to take data for each year and combine it to see long term
